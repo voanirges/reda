@@ -6,16 +6,11 @@ import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import org.alfresco.service.cmr.security.AuthorityType;
 import org.alfresco.webservice.accesscontrol.AccessControlServiceSoapBindingStub;
 import org.alfresco.webservice.administration.AdministrationServiceSoapBindingStub;
 import org.alfresco.webservice.administration.UserDetails;
 import org.alfresco.webservice.authentication.AuthenticationFault;
-import org.alfresco.webservice.repository.QueryResult;
-import org.alfresco.webservice.types.Query;
-import org.alfresco.webservice.types.Store;
 import org.alfresco.webservice.util.AuthenticationUtils;
-import org.alfresco.webservice.util.Constants;
 import org.alfresco.webservice.util.WebServiceFactory;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
