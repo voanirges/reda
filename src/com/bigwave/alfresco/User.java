@@ -4,11 +4,25 @@ package bigwave.alfresco;
 public class User
 {
 
-    String username;
+    String  username;
 
-    String group;
+    String  group;
 
-    String password;
+    String  password;
+
+    boolean active;
+
+    public boolean isActive()
+    {
+
+        return active;
+    }
+
+    public void setActive( boolean active )
+    {
+
+        this.active = active;
+    }
 
     public String getUsername()
     {

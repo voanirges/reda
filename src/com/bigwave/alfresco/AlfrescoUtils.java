@@ -210,16 +210,21 @@ public class AlfrescoUtils
         NewUserDetails[] properties = new NewUserDetails[4];
         NamedValue[] pfirstName = new NamedValue[]
         {
-                    new NamedValue(Constants.PROP_USER_FIRSTNAME, false, firstName, null), new NamedValue(Constants.PROP_USER_FIRSTNAME, false, lastName, null)
+                    new NamedValue(Constants.PROP_USERNAME, false, username, null),
+                    new NamedValue(Constants.PROP_NAME, false, firstName + " " + lastName, null),
+                    new NamedValue(Constants.PROP_USER_FIRSTNAME, false, firstName, null), new NamedValue(Constants.PROP_USER_LASTNAME, false, lastName, null)
         };
         properties[0] = new NewUserDetails(firstName, firstName, pfirstName);
-        // NamedValue[] pLastnametName=new NamedValue[]{new
-        // NamedValue(Constants.PROP_USER_FIRSTNAME,false,lastName,null)};
-        // properties[1] = new NewUserDetails(firstName, lastName,
-        // pLastnametName);
-        // NamedValue[] pLastnametName=new NamedValue[]{new
-        // NamedValue(Constants.PROP_USER_FIRSTNAME,false,lastName,null)};
-        // properties[2] = new NewUserDetails(firstName, email, null);
+//        NamedValue[] pLastnametName = new NamedValue[]
+//        {
+//            new NamedValue(Constants.PROP_USER_LASTNAME, false, lastName, null)
+//        };
+//        properties[1] = new NewUserDetails(firstName, firstName, pLastnametName);
+//        NamedValue[] pEmail = new NamedValue[]
+//        {
+//            new NamedValue(Constants.PROP_USER_EMAIL, false, email, null)
+//        };
+//        properties[2] = new NewUserDetails(firstName, firstName, pEmail);
         // properties[3] = new NewUserDetails(firstName, username, null);
 
         UserDetails[] details = administrationService.createUsers(properties);
@@ -278,6 +283,7 @@ public class AlfrescoUtils
         try
         {
             WebServiceFactory.setEndpointAddress(GetProperties.getProperty(GetProperties.ALFRESCO_URL));
+            AuthenticationUtils.startSession(GetProperties.getProperty(GetProperties.ALFRESCO_USER), GetProperties.getProperty(GetProperties.ALFRESCO_PASS));
         }
         catch (IOException e)
         {
@@ -288,7 +294,7 @@ public class AlfrescoUtils
         {
             SiblingAuthorityFilter saf = new SiblingAuthorityFilter();
             saf.setAuthorityType("USER");
-            String[] users = accessControlService.getChildAuthorities("GROUP_" + group, saf);
+            String[] users = accessControlService.getChildAuthorities(group, saf);
             if (users != null)
             {
                 for (int i = 0; i < users.length; i++)
