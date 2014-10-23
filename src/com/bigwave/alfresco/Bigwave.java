@@ -57,7 +57,8 @@ public class Bigwave
             }
             for (String dGroup : groups)
             {
-
+                dGroup = dGroup.replace(" ", "_");
+                dGroup = dGroup.replaceAll("\\W", "_");
                 boolean successCreateGroup = AlfrescoUtils.createGroup(dGroup, false, null);
 
             }
