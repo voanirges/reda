@@ -210,7 +210,7 @@ public class AlfrescoUtils
         NewUserDetails[] properties = new NewUserDetails[4];
         NamedValue[] pfirstName = new NamedValue[]
         {
-                    new NamedValue(Constants.PROP_USERNAME, false, username, null),
+                    new NamedValue(Constants.PROP_USERNAME, false, username, null), new NamedValue(Constants.PROP_USER_EMAIL, false, email, null),
                     new NamedValue(Constants.PROP_NAME, false, firstName + " " + lastName, null),
                     new NamedValue(Constants.PROP_USER_FIRSTNAME, false, firstName, null), new NamedValue(Constants.PROP_USER_LASTNAME, false, lastName, null)
         };
@@ -219,11 +219,12 @@ public class AlfrescoUtils
 //        {
 //            new NamedValue(Constants.PROP_USER_LASTNAME, false, lastName, null)
 //        };
-//        properties[1] = new NewUserDetails(firstName, firstName, pLastnametName);
 //        NamedValue[] pEmail = new NamedValue[]
-//        {
-//            new NamedValue(Constants.PROP_USER_EMAIL, false, email, null)
-//        };
+//                    {
+//                        new NamedValue(Constants.PROP_USER_EMAIL, false, email, null)
+//                    };
+//        properties[1] = new NewUserDetails(firstName, firstName, pEmail);
+       
 //        properties[2] = new NewUserDetails(firstName, firstName, pEmail);
         // properties[3] = new NewUserDetails(firstName, username, null);
 

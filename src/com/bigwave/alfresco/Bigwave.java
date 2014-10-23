@@ -51,21 +51,24 @@ public class Bigwave
             groups = SqlConnector.getGroups();
             logger.info("Total number of groups in database : " + groups.size());
             ArrayList<String> allAlfrescoGroups = AlfrescoUtils.getAllGroups();
+            for (String alfGroup : groups)
+            {
+                AlfrescoUtils.deleteGroup(alfGroup, false, null);
+            }
             for (String dGroup : groups)
             {
-                if (allAlfrescoGroups.contains(dGroup))
-                {
-                    // AlfrescoUtils.deleteGroup(alfGroup, false, null);
-                }
-                else
-                {
-                    boolean successCreateGroup = AlfrescoUtils.createGroup(dGroup, false, null);
-                }
+
+                boolean successCreateGroup = AlfrescoUtils.createGroup(dGroup, false, null);
+
             }
 
             boolean existUser = false;
             for (User dbUser : users)
             {
+                AlfrescoUtils.deleteUsers(new String[]
+                {
+                    dbUser.username
+                });
                 if (dbUser.isActive())
                 {
 
@@ -84,7 +87,15 @@ public class Bigwave
 
                     try
                     {
-                        AlfrescoUtils.createUser(dbUser.username, "", "", dbUser.username);
+                        String firstname = dbUser.username;
+                        String lastname = dbUser.username;
+                        if (dbUser.username.indexOf(" ") != -1)
+                        {
+                            firstname = dbUser.username.substring(0, dbUser.username.indexOf(" "));
+                            lastname = dbUser.username.substring(dbUser.username.indexOf(" ") + 1);
+                        }
+
+                        AlfrescoUtils.createUser(firstname, lastname, dbUser.group, dbUser.username);
                         logger.info("Successfully created user : " + dbUser.username);
                         totalcreated++;
                     }
