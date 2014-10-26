@@ -40,25 +40,25 @@ public class Bigwave
     {
 
         PropertyConfigurator.configure("log4j.properties");
-
+        final long startTime = System.currentTimeMillis();
         try
         {
             AlfrescoUtils.setLogger();
             WebServiceFactory.setEndpointAddress(GetProperties.getProperty(GetProperties.ALFRESCO_URL));
             AuthenticationUtils.startSession(GetProperties.getProperty(GetProperties.ALFRESCO_USER), GetProperties.getProperty(GetProperties.ALFRESCO_PASS));
             users = SqlConnector.getUsers();
+
             logger.info("Total number of users in database : " + users.size());
             groups = SqlConnector.getGroups();
             logger.info("Total number of groups in database : " + groups.size());
-            ArrayList<String> allAlfrescoGroups = AlfrescoUtils.getAllGroups();
+
             for (String alfGroup : groups)
             {
                 AlfrescoUtils.deleteGroup(alfGroup, false, null);
             }
             for (String dGroup : groups)
             {
-                dGroup = dGroup.replace(" ", "_");
-                dGroup = dGroup.replaceAll("\\W", "_");
+                // dGroup = normalizeGroupName(dGroup);
                 boolean successCreateGroup = AlfrescoUtils.createGroup(dGroup, false, null);
 
             }
@@ -66,68 +66,75 @@ public class Bigwave
             boolean existUser = false;
             for (User dbUser : users)
             {
-                AlfrescoUtils.deleteUsers(new String[]
-                {
-                    dbUser.username
-                });
+
+                logger.info("Processing user  : " + dbUser.username + " active :" + dbUser.isActive());
                 if (dbUser.isActive())
                 {
 
-                    // try
-                    // {
-                    // UserDetails userDetails =
-                    // AlfrescoUtils.getUser(dbUser.getUsername());
-                    //
-                    // if (userDetails != null)
-                    // {
-                    // userDetails.getProperties();
-                    // }
-                    // }
-                    // catch (RemoteException e)
-                    // {
-
                     try
                     {
-                        String firstname = dbUser.username;
-                        String lastname = dbUser.username;
-                        if (dbUser.username.indexOf(" ") != -1)
+                        UserDetails userDetails = AlfrescoUtils.getUser(dbUser.getUsername());
+
+                        if (userDetails != null)
                         {
-                            firstname = dbUser.username.substring(0, dbUser.username.indexOf(" "));
-                            lastname = dbUser.username.substring(dbUser.username.indexOf(" ") + 1);
+                            userDetails.getProperties();
+                            existUser = true;
                         }
-
-                        AlfrescoUtils.createUser(firstname, lastname, dbUser.group, dbUser.username);
-                        logger.info("Successfully created user : " + dbUser.username);
-                        totalcreated++;
                     }
-                    catch (Exception exc)
+                    catch (RemoteException e)
                     {
-                        logger.error("Can not create user : ", exc);
-                        totalfailed++;
+                        existUser = false;
                     }
+                    if (!existUser)
+                    {
+                        try
+                        {
+                            String firstname = dbUser.username;
+                            String lastname = dbUser.username;
+                            if (dbUser.username.indexOf(" ") != -1)
+                            {
+                                firstname = dbUser.username.substring(0, dbUser.username.indexOf(" "));
+                                lastname = dbUser.username.substring(dbUser.username.indexOf(" ") + 1);
+                            }
 
-                    // }
+                            AlfrescoUtils.createUser(firstname, lastname, dbUser.group, dbUser.username);
+                            logger.info("Successfully created user : " + dbUser.username);
+                            totalcreated++;
+                        }
+                        catch (Exception exc)
+                        {
+                            logger.error("Can not create user : " + dbUser.username + " , already exist !");
+                            totalfailed++;
+                        }
+                    }
+                    else
+                    {
+                        try
+                        {
+                            String firstname = dbUser.username;
+                            String lastname = dbUser.username;
+                            if (dbUser.username.indexOf(" ") != -1)
+                            {
+                                firstname = dbUser.username.substring(0, dbUser.username.indexOf(" "));
+                                lastname = dbUser.username.substring(dbUser.username.indexOf(" ") + 1);
+                            }
+
+                            AlfrescoUtils.updateUser(firstname, lastname, dbUser.group, dbUser.username);
+                            logger.info("Successfully updated user : " + dbUser.username);
+                            totalupdated++;
+                        }
+                        catch (Exception exc)
+                        {
+                            logger.error("Can not update user : " + dbUser.username);
+                            totalfailed++;
+                        }
+                    }
 
                     ArrayList<String> userGroups = SqlConnector.getGroupsOfUser(dbUser.username);
                     for (String usrGroup : userGroups)
                     {
                         ArrayList<String> groupUsers = AlfrescoUtils.getAllUsers(usrGroup);
-                        // for (String groupUser : groupUsers)
-                        // {
-                        //
-                        // boolean contains = false;
-                        // for (User idbUser : users)
-                        // {
-                        // if (idbUser.getUsername().equals(groupUser))
-                        // {
-                        // contains = true;
-                        // }
-                        //
-                        // }
 
-                        // if (!AlfrescoUtils.isUserInGroup(usrGroup,
-                        // dbUser.username))
-                        // {
                         try
                         {
                             AlfrescoUtils.addUsersToGroup(dbUser.username, usrGroup);
@@ -135,74 +142,10 @@ public class Bigwave
                         }
                         catch (Exception exc)
                         {
-                            logger.error("Can not create group : " + exc);
+                            logger.error("Can not create group : " + usrGroup + " , already exist !");
                             totalfailed++;
                         }
-                        // }
-                        // if (!contains)
-                        // {
-                        // try
-                        // {
-                        // AlfrescoUtils.deleteUsers(new String[]
-                        // {
-                        // groupUser
-                        // });
-                        // totaldeleted++;
-                        // }
-                        // catch (Exception exc)
-                        // {
-                        // logger.error("Can not cdelete user : " + exc);
-                        // totalfailed++;
-                        // }
-                        // }
-                        // }
 
-                        // if (allAlfrescoGroups.contains(usrGroup))
-                        // {
-                        // if (!AlfrescoUtils.isUserInGroup(usrGroup,
-                        // dbUser.username))
-                        // {
-                        // try
-                        // {
-                        // AlfrescoUtils.addUsersToGroup(dbUser.username,
-                        // usrGroup);
-                        // logger.info("User : " + dbUser.username +
-                        // " successfully added to group " + usrGroup);
-                        // }
-                        // catch (Exception exc)
-                        // {
-                        // logger.error("Can not create group : " + exc);
-                        // totalfailed++;
-                        // }
-                        // }
-                        // }
-                        // else
-                        // {
-                        // try
-                        // {
-                        // boolean successCreateGroup =
-                        // AlfrescoUtils.createGroup(usrGroup, false, null);
-                        // if (successCreateGroup)
-                        // {
-                        // AlfrescoUtils.addUsersToGroup(dbUser.username,
-                        // usrGroup);
-                        // logger.info("User : " + dbUser.username +
-                        // " successfully added to group " + usrGroup);
-                        // totalupdated++;
-                        // }
-                        // else
-                        // {
-                        // logger.error("Can not create group : ");
-                        // totalfailed++;
-                        // }
-                        // }
-                        // catch (Exception excCreateGroup)
-                        // {
-                        // logger.error("Can not create group : ",
-                        // excCreateGroup);
-                        // }
-                        //
-                        // }
                     }
 
                 }
@@ -218,7 +161,7 @@ public class Bigwave
                     }
                     catch (Exception exc)
                     {
-                        logger.error("Can not cdelete user : " + exc);
+                        logger.error("Can not cdelete user : ");
                         totalfailed++;
                     }
                 }
@@ -242,6 +185,16 @@ public class Bigwave
         {
             e.printStackTrace();
         }
+        final long endTime = System.currentTimeMillis();
+        logger.info("Total execution time: " + (endTime - startTime));
 
+    }
+
+    private static String normalizeGroupName( String dGroup )
+    {
+
+        dGroup = dGroup.replace(" ", "_");
+        dGroup = dGroup.replaceAll("\\W", "_");
+        return dGroup;
     }
 }

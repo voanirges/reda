@@ -58,6 +58,14 @@ public class AlfrescoUtils
         PropertyConfigurator.configure("log4j.properties");
     }
 
+    private static String normalizeGroupName( String dGroup )
+    {
+
+        dGroup = dGroup.replace(" ", "_");
+        dGroup = dGroup.replaceAll("\\W", "_");
+        return dGroup;
+    }
+
     public static void main( String a[] )
     {
 
@@ -163,11 +171,11 @@ public class AlfrescoUtils
         }
         catch (AccessControlFault e)
         {
-            logger.error("Can not get users of group : ", e);;
+            logger.error("Can not get users of group : " + groupname);;
         }
         catch (RemoteException e)
         {
-            logger.error("Can not get users of group : ", e);;
+            logger.error("Can not get users of group : " + groupname);;
         }
         return users;
     }
@@ -182,22 +190,25 @@ public class AlfrescoUtils
         try
         {
             String[] users = accessControlService.getChildAuthorities("GROUP_" + groupname, saf);
-            for (int i = 0; i < users.length; i++)
+            if (users != null)
             {
-                if (username.equals(users[i]))
+                for (int i = 0; i < users.length; i++)
                 {
-                    return true;
+                    if (username.equals(users[i]))
+                    {
+                        return true;
+                    }
                 }
             }
         }
         catch (AccessControlFault e)
         {
 
-            logger.error("Can not get user group : ", e);
+            logger.error("Can not get user group : " + groupname);
         }
         catch (RemoteException e)
         {
-            logger.error("Can not get user group : ", e);
+            logger.error("Can not get user group : " + groupname);
         }
 
         return false;
@@ -215,17 +226,17 @@ public class AlfrescoUtils
                     new NamedValue(Constants.PROP_USER_FIRSTNAME, false, firstName, null), new NamedValue(Constants.PROP_USER_LASTNAME, false, lastName, null)
         };
         properties[0] = new NewUserDetails(firstName, firstName, pfirstName);
-//        NamedValue[] pLastnametName = new NamedValue[]
-//        {
-//            new NamedValue(Constants.PROP_USER_LASTNAME, false, lastName, null)
-//        };
-//        NamedValue[] pEmail = new NamedValue[]
-//                    {
-//                        new NamedValue(Constants.PROP_USER_EMAIL, false, email, null)
-//                    };
-//        properties[1] = new NewUserDetails(firstName, firstName, pEmail);
-       
-//        properties[2] = new NewUserDetails(firstName, firstName, pEmail);
+        // NamedValue[] pLastnametName = new NamedValue[]
+        // {
+        // new NamedValue(Constants.PROP_USER_LASTNAME, false, lastName, null)
+        // };
+        // NamedValue[] pEmail = new NamedValue[]
+        // {
+        // new NamedValue(Constants.PROP_USER_EMAIL, false, email, null)
+        // };
+        // properties[1] = new NewUserDetails(firstName, firstName, pEmail);
+
+        // properties[2] = new NewUserDetails(firstName, firstName, pEmail);
         // properties[3] = new NewUserDetails(firstName, username, null);
 
         UserDetails[] details = administrationService.createUsers(properties);
@@ -331,6 +342,8 @@ public class AlfrescoUtils
     public static void addUsersToGroup( String username , String groupName ) throws AccessControlFault , RemoteException
     {
 
+        groupName = normalizeGroupName(groupName);
+
         try
         {
             WebServiceFactory.setEndpointAddress(GetProperties.getProperty(GetProperties.ALFRESCO_URL));
@@ -378,6 +391,7 @@ public class AlfrescoUtils
     public static boolean createGroup( String groupName , boolean moreGroups , String[] groupNames )
     {
 
+        groupName = normalizeGroupName(groupName);
         try
         {
             WebServiceFactory.setEndpointAddress(GetProperties.getProperty(GetProperties.ALFRESCO_URL));
@@ -405,7 +419,7 @@ public class AlfrescoUtils
             }
             catch (Exception exc)
             {
-                logger.error("Can not create group : ", exc);
+                logger.error("Can not create group : " + groupName);
                 return false;
             }
         }
@@ -547,4 +561,22 @@ public class AlfrescoUtils
         return true;
 
     }
+
+    public static UserDetails[] updateUser( String firstName , String lastName , String email , String username ) throws AdministrationFault , RemoteException
+    {
+
+        UserDetails[] properties = new UserDetails[4];
+        NamedValue[] pfirstName = new NamedValue[]
+        {
+                    new NamedValue(Constants.PROP_USER_EMAIL, false, email, null),
+                    new NamedValue(Constants.PROP_NAME, false, firstName + " " + lastName, null),
+                    new NamedValue(Constants.PROP_USER_FIRSTNAME, false, firstName, null), new NamedValue(Constants.PROP_USER_LASTNAME, false, lastName, null)
+        };
+        properties[0] = new UserDetails(username, pfirstName);
+        properties[0].setUserName(username);
+
+        UserDetails[] details = administrationService.updateUsers(properties);
+        return details;
+    }
+
 }
