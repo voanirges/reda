@@ -89,13 +89,13 @@ public class Bigwave
                     {
                         try
                         {
-                            String firstname = dbUser.username;
-                            String lastname = dbUser.username;
-                            if (dbUser.username.indexOf(" ") != -1)
-                            {
-                                firstname = dbUser.username.substring(0, dbUser.username.indexOf(" "));
-                                lastname = dbUser.username.substring(dbUser.username.indexOf(" ") + 1);
-                            }
+                            String firstname = dbUser.getFirstname();
+                            String lastname = dbUser.getLastname();
+//                            if (dbUser.username.indexOf(" ") != -1)
+//                            {
+//                                firstname = dbUser.username.substring(0, dbUser.username.indexOf(" "));
+//                                lastname = dbUser.username.substring(dbUser.username.indexOf(" ") + 1);
+//                            }
 
                             AlfrescoUtils.createUser(firstname, lastname, dbUser.group, dbUser.username);
                             logger.info("Successfully created user : " + dbUser.username);
@@ -111,13 +111,16 @@ public class Bigwave
                     {
                         try
                         {
-                            String firstname = dbUser.username;
-                            String lastname = dbUser.username;
-                            if (dbUser.username.indexOf(" ") != -1)
-                            {
-                                firstname = dbUser.username.substring(0, dbUser.username.indexOf(" "));
-                                lastname = dbUser.username.substring(dbUser.username.indexOf(" ") + 1);
-                            }
+                            String firstname = dbUser.getFirstname();
+                            String lastname = dbUser.getLastname();
+                            // if (dbUser.username.indexOf(" ") != -1)
+                            // {
+                            // firstname = dbUser.username.substring(0,
+                            // dbUser.username.indexOf(" "));
+                            // lastname =
+                            // dbUser.username.substring(dbUser.username.indexOf(" ")
+                            // + 1);
+                            // }
 
                             AlfrescoUtils.updateUser(firstname, lastname, dbUser.group, dbUser.username);
                             logger.info("Successfully updated user : " + dbUser.username);
