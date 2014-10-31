@@ -65,9 +65,10 @@ public class Bigwave
 
             for (String alfGroup : groups)
             {
-            	AlfrescoUtils.deleteGroup(alfGroup, false, null);
-            	totalGroupsdeleted++;
+            	boolean successDeleteGroup = AlfrescoUtils.deleteGroup(alfGroup, false, null);
+            	if (successDeleteGroup) totalGroupsdeleted++;
             }
+            
             for (String dGroup : groups)
             {
                 boolean successCreateGroup = AlfrescoUtils.createGroup(dGroup, false, null);
@@ -98,6 +99,7 @@ public class Bigwave
                         {
                             userDetails.getProperties();
                             existUser = true;
+                            logger.info(getTimestamp() + " user exists in Alfresco  : " + userDetails.toString());
                         }
                     }
                     catch (RemoteException e)
@@ -136,7 +138,7 @@ public class Bigwave
                         }
                         catch (Exception exc)
                         {
-                            logger.error(getTimestamp() + " Can not update user : " + dbUser.username);
+                            logger.error(getTimestamp() + " Cannot update user : " + dbUser.username);
                             totalUsersfailed++;
                         }
                     }
@@ -180,6 +182,7 @@ public class Bigwave
                 }
 
             }
+
             logger.info("Total users deleted : " + totalUsersdeleted);
             logger.info("Total users  updated : " + totalUsersupdated);
             logger.info("Total user created " + totalUserscreated);
@@ -209,13 +212,6 @@ public class Bigwave
 
     }
 
-    private static String normalizeGroupName( String dGroup )
-    {
-
-        dGroup = dGroup.replace(" ", "_");
-        dGroup = dGroup.replaceAll("\\W", "_");
-        return dGroup;
-    }
 
     public static Timestamp getTimestamp()
     {
