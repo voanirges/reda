@@ -163,11 +163,11 @@ public class AlfrescoUtils
         }
         catch (AccessControlFault e)
         {
-            logger.error(Bigwave.getTimestamp() +" Can not get users of group : " + groupname);;
+            logger.error(Bigwave.getTimestamp() +" Can not get users of group <" + groupname + ">");
         }
         catch (RemoteException e)
         {
-            logger.error(Bigwave.getTimestamp() +" Can not get users of group : " + groupname);;
+            logger.error(Bigwave.getTimestamp() +" Can not get users of group <" + groupname + ">");
         }
         return users;
     }
@@ -222,7 +222,6 @@ public class AlfrescoUtils
         properties[0] = new NewUserDetails(username, username, pfirstName);
               
         UserDetails[] details = administrationService.createUsers(properties);
-        logger.info(Bigwave.getTimestamp() + " Successfully created user : " + firstName + " " + lastName + " " + email + " " + username);
         return details;
     }
 
@@ -391,11 +390,11 @@ public class AlfrescoUtils
                 newAuthorities[0] = cpGrpAuth;
 
                 String[] result = accessControlService.createAuthorities(null, newAuthorities);
-                logger.info(Bigwave.getTimestamp() + " Successfully created group : " + groupName + " ");
+                logger.info(Bigwave.getTimestamp() + " Successfully created group <" + groupName + ">");
             }
             catch (Exception exc)
             {
-                logger.info(Bigwave.getTimestamp() + " can not create group : " + groupName + " ");
+                logger.info(Bigwave.getTimestamp() + " can not create group <" + groupName + ">");
                 exc.printStackTrace();
                 return false;
             }
@@ -479,12 +478,12 @@ public class AlfrescoUtils
                 String[] temp = new String[1];
                 temp[0] = GROUP_AUTHORITY_TYPE + "_" + groupName;
                 accessControlService.deleteAuthorities(temp);
-                logger.info(Bigwave.getTimestamp() + " Successfully deleted group : " + groupName + " ");
+                logger.info(Bigwave.getTimestamp() + " Successfully deleted group <" + groupName + ">");
             }
             catch (Exception exc)
             {
             	exc.printStackTrace();
-            	logger.info(Bigwave.getTimestamp() + " Failed to delete group : " + groupName + " ");
+            	logger.info(Bigwave.getTimestamp() + " Failed to delete group <" + groupName + ">");
                 return false;
             }
         }
@@ -560,7 +559,7 @@ public class AlfrescoUtils
         properties[0].setUserName(username);
 
         UserDetails[] details = administrationService.updateUsers(properties);
-        logger.info(Bigwave.getTimestamp() + " Successfully updated user : " + firstName + " " + lastName + " " + email + " " + username);
+        logger.info(Bigwave.getTimestamp() + " Successfully updated user <" + firstName + "> <" + lastName + "> <" + email + "> <" + username + ">");
         return details;
     }
 
