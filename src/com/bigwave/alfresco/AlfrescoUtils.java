@@ -58,14 +58,6 @@ public class AlfrescoUtils
         PropertyConfigurator.configure("log4j.properties");
     }
 
-    private static String normalizeGroupName( String dGroup )
-    {
-
-        dGroup = dGroup.replace(" ", "_");
-        dGroup = dGroup.replaceAll("\\W", "_");
-        return dGroup;
-    }
-
     public static void main( String a[] )
     {
 
@@ -218,14 +210,17 @@ public class AlfrescoUtils
     public static UserDetails[] createUser( String firstName , String lastName , String email , String username ) throws AdministrationFault , RemoteException
     {
 
-        NewUserDetails[] properties = new NewUserDetails[4];
+        NewUserDetails[] properties = new NewUserDetails[5];
         NamedValue[] pfirstName = new NamedValue[]
         {
-                    new NamedValue(Constants.PROP_USERNAME, false, username, null), new NamedValue(Constants.PROP_USER_EMAIL, false, email, null),
+                    new NamedValue(Constants.PROP_USERNAME, false, username, null), 
+                    new NamedValue(Constants.PROP_USER_EMAIL, false, email, null),
                     new NamedValue(Constants.PROP_NAME, false, firstName + " " + lastName, null),
-                    new NamedValue(Constants.PROP_USER_FIRSTNAME, false, firstName, null), new NamedValue(Constants.PROP_USER_LASTNAME, false, lastName, null)
+                    new NamedValue(Constants.PROP_USER_FIRSTNAME, false, firstName, null), 
+                    new NamedValue(Constants.PROP_USER_LASTNAME, false, lastName, null)
         };
-        properties[0] = new NewUserDetails(firstName, firstName, pfirstName);
+        properties[0] = new NewUserDetails(username, username, pfirstName);
+              
         UserDetails[] details = administrationService.createUsers(properties);
         logger.info(Bigwave.getTimestamp() + " Successfully created user : " + firstName + " " + lastName + " " + email + " " + username);
         return details;
@@ -330,8 +325,6 @@ public class AlfrescoUtils
     public static void addUsersToGroup( String username , String groupName ) throws AccessControlFault , RemoteException
     {
 
-        groupName = normalizeGroupName(groupName);
-
         try
         {
             WebServiceFactory.setEndpointAddress(GetProperties.getProperty(GetProperties.ALFRESCO_URL));
@@ -374,7 +367,6 @@ public class AlfrescoUtils
     public static boolean createGroup( String groupName , boolean moreGroups , String[] groupNames )
     {
 
-        groupName = normalizeGroupName(groupName);
         try
         {
             WebServiceFactory.setEndpointAddress(GetProperties.getProperty(GetProperties.ALFRESCO_URL));
@@ -404,6 +396,7 @@ public class AlfrescoUtils
             catch (Exception exc)
             {
                 logger.info(Bigwave.getTimestamp() + " can not create group : " + groupName + " ");
+                exc.printStackTrace();
                 return false;
             }
         }
@@ -422,9 +415,12 @@ public class AlfrescoUtils
                     newAuthorities[i] = cpGrpAuth;
                 }
                 String[] result = accessControlService.createAuthorities(null, newAuthorities);
+                logger.info(Bigwave.getTimestamp() + " Successfully created groups : " + groupNames.toString() + " ");
             }
             catch (Exception exc)
             {
+                logger.info(Bigwave.getTimestamp() + " can not create groups : " + groupNames.toString() + " ");
+                exc.printStackTrace();
                 return false;
             }
 
@@ -475,7 +471,7 @@ public class AlfrescoUtils
     public static boolean deleteGroup( String groupName , boolean changeUser , String[] groupNames )
     {
 
-        String GROUP_AUTHORITY_TYPE = "GROUP";
+    	String GROUP_AUTHORITY_TYPE = "GROUP";
         if (!changeUser)
         {
             try
@@ -483,9 +479,12 @@ public class AlfrescoUtils
                 String[] temp = new String[1];
                 temp[0] = GROUP_AUTHORITY_TYPE + "_" + groupName;
                 accessControlService.deleteAuthorities(temp);
+                logger.info(Bigwave.getTimestamp() + " Successfully deleted group : " + groupName + " ");
             }
             catch (Exception exc)
             {
+            	exc.printStackTrace();
+            	logger.info(Bigwave.getTimestamp() + " Failed to delete group : " + groupName + " ");
                 return false;
             }
         }
@@ -554,7 +553,8 @@ public class AlfrescoUtils
         {
                     new NamedValue(Constants.PROP_USER_EMAIL, false, email, null),
                     new NamedValue(Constants.PROP_NAME, false, firstName + " " + lastName, null),
-                    new NamedValue(Constants.PROP_USER_FIRSTNAME, false, firstName, null), new NamedValue(Constants.PROP_USER_LASTNAME, false, lastName, null)
+                    new NamedValue(Constants.PROP_USER_FIRSTNAME, false, firstName, null),
+                    new NamedValue(Constants.PROP_USER_LASTNAME, false, lastName, null)
         };
         properties[0] = new UserDetails(username, pfirstName);
         properties[0].setUserName(username);
