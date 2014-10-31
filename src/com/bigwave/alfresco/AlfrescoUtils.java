@@ -171,11 +171,11 @@ public class AlfrescoUtils
         }
         catch (AccessControlFault e)
         {
-            logger.error("Can not get users of group : " + groupname);;
+            logger.error(Bigwave.getTimestamp() +" Can not get users of group : " + groupname);;
         }
         catch (RemoteException e)
         {
-            logger.error("Can not get users of group : " + groupname);;
+            logger.error(Bigwave.getTimestamp() +" Can not get users of group : " + groupname);;
         }
         return users;
     }
@@ -204,11 +204,11 @@ public class AlfrescoUtils
         catch (AccessControlFault e)
         {
 
-            logger.error("Can not get user group : " + groupname);
+            logger.info(Bigwave.getTimestamp() + " can not get user groups for: " + username + " ");
         }
         catch (RemoteException e)
         {
-            logger.error("Can not get user group : " + groupname);
+            logger.info(Bigwave.getTimestamp() + " can not get user groups for: " + username + " ");
         }
 
         return false;
@@ -226,20 +226,8 @@ public class AlfrescoUtils
                     new NamedValue(Constants.PROP_USER_FIRSTNAME, false, firstName, null), new NamedValue(Constants.PROP_USER_LASTNAME, false, lastName, null)
         };
         properties[0] = new NewUserDetails(firstName, firstName, pfirstName);
-        // NamedValue[] pLastnametName = new NamedValue[]
-        // {
-        // new NamedValue(Constants.PROP_USER_LASTNAME, false, lastName, null)
-        // };
-        // NamedValue[] pEmail = new NamedValue[]
-        // {
-        // new NamedValue(Constants.PROP_USER_EMAIL, false, email, null)
-        // };
-        // properties[1] = new NewUserDetails(firstName, firstName, pEmail);
-
-        // properties[2] = new NewUserDetails(firstName, firstName, pEmail);
-        // properties[3] = new NewUserDetails(firstName, username, null);
-
         UserDetails[] details = administrationService.createUsers(properties);
+        logger.info(Bigwave.getTimestamp() + " Successfully created user : " + firstName + " " + lastName + " " + email + " " + username);
         return details;
     }
 
@@ -359,11 +347,6 @@ public class AlfrescoUtils
         String parentAuthority = GROUP_AUTHORITY_TYPE + "_" + groupName;// "REDA_MANAGERS";
         AccessControlServiceSoapBindingStub accessControlService = WebServiceFactory.getAccessControlService();
         String[] result = accessControlService.addChildAuthorities(parentAuthority, cpUsers);
-
-        // accessControlService.removeChildAuthorities(parentAuthority,
-        // cpUsers);
-
-        // System.out.println("results = " + result);
     }
 
     public static NamedValue[] createUserProperties( String homefolder , String firstname , String midlename , String lastname , String email , String orgid )
@@ -416,10 +399,11 @@ public class AlfrescoUtils
                 newAuthorities[0] = cpGrpAuth;
 
                 String[] result = accessControlService.createAuthorities(null, newAuthorities);
+                logger.info(Bigwave.getTimestamp() + " Successfully created group : " + groupName + " ");
             }
             catch (Exception exc)
             {
-                logger.error("Can not create group : " + groupName);
+                logger.info(Bigwave.getTimestamp() + " can not create group : " + groupName + " ");
                 return false;
             }
         }
@@ -576,6 +560,7 @@ public class AlfrescoUtils
         properties[0].setUserName(username);
 
         UserDetails[] details = administrationService.updateUsers(properties);
+        logger.info(Bigwave.getTimestamp() + " Successfully updated user : " + firstName + " " + lastName + " " + email + " " + username);
         return details;
     }
 

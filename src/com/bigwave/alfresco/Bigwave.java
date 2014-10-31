@@ -4,6 +4,7 @@ package bigwave.alfresco;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 
 import org.alfresco.webservice.accesscontrol.AccessControlServiceSoapBindingStub;
@@ -36,6 +37,10 @@ public class Bigwave
 
     static int                                 totalfailed           = 0;
 
+    static int                                 groupsfailed          = 0;
+
+    static int                                 groupscreated         = 0;
+
     public static void main( String[] args )
     {
 
@@ -58,8 +63,15 @@ public class Bigwave
             }
             for (String dGroup : groups)
             {
-                // dGroup = normalizeGroupName(dGroup);
                 boolean successCreateGroup = AlfrescoUtils.createGroup(dGroup, false, null);
+                if (successCreateGroup)
+                {
+                    groupscreated++;
+                }
+                else
+                {
+                    groupsfailed++;
+                }
 
             }
 
@@ -67,7 +79,7 @@ public class Bigwave
             for (User dbUser : users)
             {
 
-                logger.info("Processing user  : " + dbUser.username + " active :" + dbUser.isActive());
+                logger.info(getTimestamp() + " Processing user  : " + dbUser.username + " active :" + dbUser.isActive());
                 if (dbUser.isActive())
                 {
 
@@ -89,21 +101,14 @@ public class Bigwave
                     {
                         try
                         {
-                            String firstname = dbUser.username;
-                            String lastname = dbUser.username;
-                            if (dbUser.username.indexOf(" ") != -1)
-                            {
-                                firstname = dbUser.username.substring(0, dbUser.username.indexOf(" "));
-                                lastname = dbUser.username.substring(dbUser.username.indexOf(" ") + 1);
-                            }
-
+                            String firstname = dbUser.getFirstname();
+                            String lastname = dbUser.getLastname();
                             AlfrescoUtils.createUser(firstname, lastname, dbUser.group, dbUser.username);
-                            logger.info("Successfully created user : " + dbUser.username);
                             totalcreated++;
                         }
                         catch (Exception exc)
                         {
-                            logger.error("Can not create user : " + dbUser.username + " , already exist !");
+                            logger.error(getTimestamp() + " Can not create user : " + dbUser.username + " , already exist !");
                             totalfailed++;
                         }
                     }
@@ -111,21 +116,14 @@ public class Bigwave
                     {
                         try
                         {
-                            String firstname = dbUser.username;
-                            String lastname = dbUser.username;
-                            if (dbUser.username.indexOf(" ") != -1)
-                            {
-                                firstname = dbUser.username.substring(0, dbUser.username.indexOf(" "));
-                                lastname = dbUser.username.substring(dbUser.username.indexOf(" ") + 1);
-                            }
-
+                            String firstname = dbUser.getFirstname();
+                            String lastname = dbUser.getLastname();
                             AlfrescoUtils.updateUser(firstname, lastname, dbUser.group, dbUser.username);
-                            logger.info("Successfully updated user : " + dbUser.username);
                             totalupdated++;
                         }
                         catch (Exception exc)
                         {
-                            logger.error("Can not update user : " + dbUser.username);
+                            logger.error(getTimestamp() + " Can not update user : " + dbUser.username);
                             totalfailed++;
                         }
                     }
@@ -138,11 +136,11 @@ public class Bigwave
                         try
                         {
                             AlfrescoUtils.addUsersToGroup(dbUser.username, usrGroup);
-                            logger.info("User : " + dbUser.username + " successfully added to group " + usrGroup);
+                            logger.info(getTimestamp() + " User : " + dbUser.username + " successfully added to group " + usrGroup);
                         }
                         catch (Exception exc)
                         {
-                            logger.error("Can not create group : " + usrGroup + " , already exist !");
+                            logger.error(getTimestamp() + " Can add user to group : " + usrGroup + " , already exist !");
                             totalfailed++;
                         }
 
@@ -161,13 +159,18 @@ public class Bigwave
                     }
                     catch (Exception exc)
                     {
-                        logger.error("Can not cdelete user : ");
+                        logger.error(getTimestamp() + " Can not delete user : ");
                         totalfailed++;
                     }
                 }
 
             }
-            logger.info("Total deleted : " + totaldeleted + " total updated : " + totalupdated + " totalcreated " + totalcreated);
+            logger.info("Total users deleted : " + totaldeleted);
+            logger.info("Total users  updated : " + totalupdated);
+            logger.info("Total user created " + totalcreated);
+            logger.info("Total groups created " + groupscreated);
+            logger.info("Total groups updated " + groupsfailed);
+
         }
         catch (AuthenticationFault e)
         {
@@ -196,5 +199,12 @@ public class Bigwave
         dGroup = dGroup.replace(" ", "_");
         dGroup = dGroup.replaceAll("\\W", "_");
         return dGroup;
+    }
+
+    public static Timestamp getTimestamp()
+    {
+
+        java.util.Date date = new java.util.Date();
+        return new Timestamp(date.getTime());
     }
 }
