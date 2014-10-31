@@ -33,17 +33,19 @@ public class Bigwave
 
     static AccessControlServiceSoapBindingStub authorityService      = WebServiceFactory.getAccessControlService();
 
-    static int                                 totaldeleted          = 0;
+    static int                                 totalUsersdeleted          = 0;
 
-    static int                                 totalupdated          = 0;
+    static int                                 totalUsersupdated          = 0;
 
-    static int                                 totalcreated          = 0;
+    static int                                 totalUserscreated          = 0;
 
-    static int                                 totalfailed           = 0;
+    static int                                 totalUsersfailed           = 0;
 
-    static int                                 groupsfailed          = 0;
+    static int                                 totalGroupsfailed          = 0;
 
-    static int                                 groupscreated         = 0;
+    static int                                 totalGroupscreated         = 0;
+    
+    static int                                 totalGroupsdeleted         = 0;
 
     public static void main( String[] args )
     {
@@ -63,18 +65,19 @@ public class Bigwave
 
             for (String alfGroup : groups)
             {
-                AlfrescoUtils.deleteGroup(alfGroup, false, null);
+            	AlfrescoUtils.deleteGroup(alfGroup, false, null);
+            	totalGroupsdeleted++;
             }
             for (String dGroup : groups)
             {
                 boolean successCreateGroup = AlfrescoUtils.createGroup(dGroup, false, null);
                 if (successCreateGroup)
                 {
-                    groupscreated++;
+                	totalGroupscreated++;
                 }
                 else
                 {
-                    groupsfailed++;
+                	totalGroupsfailed++;
                 }
 
             }
@@ -83,7 +86,7 @@ public class Bigwave
             for (User dbUser : users)
             {
 
-                logger.info(getTimestamp() + " Processing user  : " + dbUser.username + " active :" + dbUser.isActive());
+                logger.info(getTimestamp() + " Processing user  : " + dbUser.username + " email :" + dbUser.getEmail() + " active :" + dbUser.isActive());
                 if (dbUser.isActive())
                 {
 
@@ -107,8 +110,8 @@ public class Bigwave
                         {
                             String firstname = dbUser.getFirstname();
                             String lastname = dbUser.getLastname();
-                            AlfrescoUtils.createUser(firstname, lastname, dbUser.group, dbUser.username);
-                            totalcreated++;
+                            AlfrescoUtils.createUser(firstname, lastname, dbUser.email, dbUser.username);
+                            totalUserscreated++;
                         }
                         catch (Exception exc)
                         {
@@ -119,7 +122,7 @@ public class Bigwave
                         	exc.printStackTrace(ps);
                         	ps.close();
                             logger.error(getTimestamp() + " Can not create user : " + dbUser.username);
-                            totalfailed++;
+                            totalUsersfailed++;
                         }
                     }
                     else
@@ -128,13 +131,13 @@ public class Bigwave
                         {
                             String firstname = dbUser.getFirstname();
                             String lastname = dbUser.getLastname();
-                            AlfrescoUtils.updateUser(firstname, lastname, dbUser.group, dbUser.username);
-                            totalupdated++;
+                            AlfrescoUtils.updateUser(firstname, lastname, dbUser.email, dbUser.username);
+                            totalUsersupdated++;
                         }
                         catch (Exception exc)
                         {
                             logger.error(getTimestamp() + " Can not update user : " + dbUser.username);
-                            totalfailed++;
+                            totalUsersfailed++;
                         }
                     }
 
@@ -152,7 +155,7 @@ public class Bigwave
                         {
                         	exc.printStackTrace();
                             logger.error(getTimestamp() + " Cannot add user <" + dbUser.username + "> to group : " + usrGroup + " , maybe group does not exist");
-                            totalfailed++;
+                            totalGroupsfailed++;
                         }
 
                     }
@@ -166,21 +169,23 @@ public class Bigwave
                         {
                             dbUser.username
                         });
-                        totaldeleted++;
+                        totalUsersdeleted++;
                     }
                     catch (Exception exc)
                     {
+                    	exc.printStackTrace();
                         logger.error(getTimestamp() + " Can not delete user : <" + dbUser.username + ">");
-                        totalfailed++;
+                        totalUsersfailed++;
                     }
                 }
 
             }
-            logger.info("Total users deleted : " + totaldeleted);
-            logger.info("Total users  updated : " + totalupdated);
-            logger.info("Total user created " + totalcreated);
-            logger.info("Total groups created " + groupscreated);
-            logger.info("Total groups updated " + groupsfailed);
+            logger.info("Total users deleted : " + totalUsersdeleted);
+            logger.info("Total users  updated : " + totalUsersupdated);
+            logger.info("Total user created " + totalUserscreated);
+            logger.info("Total groups created " + totalGroupscreated);
+            logger.info("Total groups updated " + totalGroupsfailed);
+            logger.info("Total groups deleted " + totalGroupsdeleted);
 
         }
         catch (AuthenticationFault e)
