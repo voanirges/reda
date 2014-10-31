@@ -76,7 +76,7 @@ public class SqlConnector
         {
             String name = rs.getString(1);
 
-            isers.add(name);
+            isers.add(normalizeGroupName(name));
 
         }
 
@@ -104,7 +104,7 @@ public class SqlConnector
             {
                 String name = rs.getString(1);
 
-                isers.add(name);
+                isers.add(normalizeGroupName(name));
 
             }
         }
@@ -115,6 +115,23 @@ public class SqlConnector
 
         return isers;
 
+    }
+    
+    private static String normalizeGroupName( String dGroup )
+    {
+    	//backslash character is the escape character or its a path separator on windows. 
+    	//Forward slash is the path separator on pretty much everything else
+    	//colon is used to separate the namespace from the name.
+        //dGroup = dGroup.replace(":", "_");
+        //dGroup = dGroup.replace("/", "_");
+        //dGroup = dGroup.replace("\\", "_");
+        dGroup = dGroup.replace(" ", "_");
+        dGroup = dGroup.replaceAll("\\W", "_");
+        dGroup = dGroup.replace("___", "_");
+        dGroup = dGroup.replace("__", "_");
+        //remove any trailing _
+        dGroup = dGroup.replaceAll("_$", "");
+        return dGroup;
     }
 
 }
