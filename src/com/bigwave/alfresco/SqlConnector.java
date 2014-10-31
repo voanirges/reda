@@ -34,13 +34,13 @@ public class SqlConnector
         while (rs.next())
         {
             String name = rs.getString(1);
-            String group = rs.getString(2);
+            String email = rs.getString(2);
             boolean active = rs.getBoolean(3);
             String firstname = rs.getString(4);
             String lastname = rs.getString(5);
 
             User usr = new User();
-            usr.setGroup(group);
+            usr.setEmail(email);
             usr.setUsername(name);
             usr.setActive(active);
             usr.setFirstname(firstname);
