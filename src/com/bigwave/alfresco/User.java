@@ -6,7 +6,7 @@ public class User
 
     String  username;
 
-    String  group;
+    String  email;
 
     String  password;
 
@@ -64,16 +64,16 @@ public class User
         this.username = username;
     }
 
-    public String getGroup()
+    public String getEmail()
     {
 
-        return group;
+        return email;
     }
 
-    public void setGroup( String group )
+    public void setEmail( String email )
     {
 
-        this.group = group;
+        this.email = email;
     }
 
     public String getPassword()
