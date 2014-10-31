@@ -1,7 +1,11 @@
 
 package bigwave.alfresco;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintStream;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -108,7 +112,13 @@ public class Bigwave
                         }
                         catch (Exception exc)
                         {
-                            logger.error(getTimestamp() + " Can not create user : " + dbUser.username + " , already exist !");
+                        	exc.printStackTrace();
+                          	File file = new File("d:\\yasser\\yasser.txt");
+                        	FileOutputStream fos = new FileOutputStream(file, true);
+                        	PrintStream ps = new PrintStream(fos);                	
+                        	exc.printStackTrace(ps);
+                        	ps.close();
+                            logger.error(getTimestamp() + " Can not create user : " + dbUser.username);
                             totalfailed++;
                         }
                     }
@@ -140,7 +150,8 @@ public class Bigwave
                         }
                         catch (Exception exc)
                         {
-                            logger.error(getTimestamp() + " Can add user to group : " + usrGroup + " , already exist !");
+                        	exc.printStackTrace();
+                            logger.error(getTimestamp() + " Cannot add user <" + dbUser.username + "> to group : " + usrGroup + " , maybe group does not exist");
                             totalfailed++;
                         }
 
@@ -159,7 +170,7 @@ public class Bigwave
                     }
                     catch (Exception exc)
                     {
-                        logger.error(getTimestamp() + " Can not delete user : ");
+                        logger.error(getTimestamp() + " Can not delete user : <" + dbUser.username + ">");
                         totalfailed++;
                     }
                 }
