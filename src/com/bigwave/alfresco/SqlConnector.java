@@ -41,10 +41,10 @@ public class SqlConnector
 
             User usr = new User();
             usr.setEmail(email);
-            usr.setUsername(name);
+            usr.setUsername(normalizeUserName(name));
             usr.setActive(active);
-            usr.setFirstname(firstname);
-            usr.setLastname(lastname);
+            usr.setFirstname(normalizeUserName(firstname));
+            usr.setLastname(normalizeUserName(lastname));
 
             isers.add(usr);
 
@@ -132,6 +132,25 @@ public class SqlConnector
         //remove any trailing _
         dGroup = dGroup.replaceAll("_$", "");
         return dGroup;
+    }
+    
+    private static String normalizeUserName( String user )
+    {
+    	//User must be trimmed of spaces
+    	//backslash character is the escape character or its a path separator on windows. 
+    	//Forward slash is the path separator on pretty much everything else
+    	//colon is used to separate the namespace from the name.
+        //dGroup = dGroup.replace(":", "_");
+        //dGroup = dGroup.replace("/", "_");
+        //dGroup = dGroup.replace("\\", "_");
+    	user = user.trim();
+    	user = user.replace(".", "");
+    	//user = user.replaceAll("\\W", "_");
+    	//user = user.replace("___", "_");
+    	//user = user.replace("__", "_");
+        //remove any trailing _
+    	//user = user.replaceAll("_$", "");
+        return user;
     }
 
 }
