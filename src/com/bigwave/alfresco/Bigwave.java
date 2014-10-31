@@ -46,6 +46,8 @@ public class Bigwave
     static int                                 totalGroupscreated         = 0;
     
     static int                                 totalGroupsdeleted         = 0;
+    
+    static int                                 totalGroupsupdated         = 0;
 
     public static void main( String[] args )
     {
@@ -87,7 +89,7 @@ public class Bigwave
             for (User dbUser : users)
             {
 
-                logger.info(getTimestamp() + " Processing user  : " + dbUser.username + " email :" + dbUser.getEmail() + " active :" + dbUser.isActive());
+                logger.info(getTimestamp() + " Processing user <" + dbUser.username + "> email <" + dbUser.getEmail() + "> active <" + dbUser.isActive() + ">");
                 if (dbUser.isActive())
                 {
 
@@ -99,7 +101,7 @@ public class Bigwave
                         {
                             userDetails.getProperties();
                             existUser = true;
-                            logger.info(getTimestamp() + " user exists in Alfresco  : " + userDetails.toString());
+                            logger.info(getTimestamp() + " user exists in Alfresco  <" + userDetails.getUserName() + ">");
                         }
                     }
                     catch (RemoteException e)
@@ -113,6 +115,7 @@ public class Bigwave
                             String firstname = dbUser.getFirstname();
                             String lastname = dbUser.getLastname();
                             AlfrescoUtils.createUser(firstname, lastname, dbUser.email, dbUser.username);
+                            logger.info(Bigwave.getTimestamp() + " Successfully created user <" + firstname + "> <" + lastname + "> <" + dbUser.email + "> <" + dbUser.username +">");
                             totalUserscreated++;
                         }
                         catch (Exception exc)
@@ -123,7 +126,7 @@ public class Bigwave
                         	PrintStream ps = new PrintStream(fos);                	
                         	exc.printStackTrace(ps);
                         	ps.close();
-                            logger.error(getTimestamp() + " Can not create user : " + dbUser.username);
+                            logger.error(getTimestamp() + " Cannot create user <" + dbUser.username + ">");
                             totalUsersfailed++;
                         }
                     }
@@ -138,7 +141,7 @@ public class Bigwave
                         }
                         catch (Exception exc)
                         {
-                            logger.error(getTimestamp() + " Cannot update user : " + dbUser.username);
+                            logger.error(getTimestamp() + " Cannot update user <" + dbUser.username +">");
                             totalUsersfailed++;
                         }
                     }
@@ -151,12 +154,13 @@ public class Bigwave
                         try
                         {
                             AlfrescoUtils.addUsersToGroup(dbUser.username, usrGroup);
-                            logger.info(getTimestamp() + " User : " + dbUser.username + " successfully added to group " + usrGroup);
+                            logger.info(getTimestamp() + " User <" + dbUser.username + "> successfully added to group <" + usrGroup + ">");
+                            totalGroupsupdated++;
                         }
                         catch (Exception exc)
                         {
                         	exc.printStackTrace();
-                            logger.error(getTimestamp() + " Cannot add user <" + dbUser.username + "> to group : " + usrGroup + " , maybe group does not exist");
+                            logger.error(getTimestamp() + " Cannot add user <" + dbUser.username + "> to group <" + usrGroup + ">");
                             totalGroupsfailed++;
                         }
 
@@ -184,11 +188,13 @@ public class Bigwave
             }
 
             logger.info("Total users deleted : " + totalUsersdeleted);
-            logger.info("Total users  updated : " + totalUsersupdated);
-            logger.info("Total user created " + totalUserscreated);
-            logger.info("Total groups created " + totalGroupscreated);
-            logger.info("Total groups updated " + totalGroupsfailed);
-            logger.info("Total groups deleted " + totalGroupsdeleted);
+            logger.info("Total users updated : " + totalUsersupdated);
+            logger.info("Total users created : " + totalUserscreated);
+            logger.info("Total users failed  : " + totalUsersfailed);
+            logger.info("Total groups deleted: " + totalGroupsdeleted);
+            logger.info("Total groups created: " + totalGroupscreated);
+            logger.info("Total groups updated: " + totalGroupsupdated);
+            logger.info("Total groups failed : " + totalGroupsfailed);
 
         }
         catch (AuthenticationFault e)
