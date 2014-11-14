@@ -31,9 +31,11 @@ public class GetProperties
 
     public static final String  ALFRESCO_URL     = "alf_url";
 
-    public static final String  ALFRESCO_USER    = "alf_user";
+    public static final String  ALFRESCO_ADMIN_USER    = "alf_admin_user";
 
-    public static final String  ALFRESCO_PASS    = "alf_pass";
+    public static final String  ALFRESCO_ADMIN_PASS    = "alf_admin_pass";
+    
+    public static final String  ALFRESCO_USER_PASS = "alf_user_pass";
 
     public static final String  JDBC_URL         = "url";
 
@@ -55,8 +57,9 @@ public class GetProperties
         String pass = prop.getProperty(JDBC_PASSWORD);
         String url = prop.getProperty(JDBC_URL);
         String alfrescoEndpoint = prop.getProperty(ALFRESCO_URL);
-        String alfUser = prop.getProperty(ALFRESCO_USER);
-        String alsPass = prop.getProperty(ALFRESCO_PASS);
+        String alfAdminUser = prop.getProperty(ALFRESCO_ADMIN_USER);
+        String alfAdminPass = prop.getProperty(ALFRESCO_ADMIN_PASS);
+        String alfUserPass = prop.getProperty(ALFRESCO_USER_PASS);
         String grQuery = prop.getProperty(JDBC_USER_QUERY);
         String usrQuery = prop.getProperty(JDBC_GROUP_QUERY);
 
@@ -64,8 +67,9 @@ public class GetProperties
         props.put(JDBC_PASSWORD, pass);
         props.put(JDBC_URL, url);
         props.put(ALFRESCO_URL, alfrescoEndpoint);
-        props.put(ALFRESCO_USER, alfUser);
-        props.put(ALFRESCO_PASS, alsPass);
+        props.put(ALFRESCO_ADMIN_USER, alfAdminUser);
+        props.put(ALFRESCO_ADMIN_PASS, alfAdminPass);
+        props.put(ALFRESCO_USER_PASS, alfUserPass);
         props.put(JDBC_USER_QUERY, grQuery);
         props.put(JDBC_GROUP_QUERY, usrQuery);
 

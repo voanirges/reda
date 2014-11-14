@@ -24,6 +24,7 @@ public class SqlConnector
         // "and b.iRightGroupId = c.iRightGroupId" +
         // "order by a.sName, b.sName;";
         String query = props.get(GetProperties.JDBC_USER_QUERY);
+        String password = props.get(GetProperties.ALFRESCO_USER_PASS);
         Connection conn;
         Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
         conn = DriverManager.getConnection(props.get(GetProperties.JDBC_URL), props.get("user"), props.get("pass"));
@@ -45,6 +46,9 @@ public class SqlConnector
             usr.setActive(active);
             usr.setFirstname(normalizeUserName(firstname));
             usr.setLastname(normalizeUserName(lastname));
+            
+            //usr.setPassword(password);
+            usr.setPassword(usr.getUsername());
 
             isers.add(usr);
 

@@ -207,7 +207,7 @@ public class AlfrescoUtils
 
     }
 
-    public static UserDetails[] createUser( String firstName , String lastName , String email , String username ) throws AdministrationFault , RemoteException
+    public static UserDetails[] createUser( String firstName , String lastName , String email , String username, String password ) throws AdministrationFault , RemoteException
     {
 
         NewUserDetails[] properties = new NewUserDetails[5];
@@ -219,9 +219,10 @@ public class AlfrescoUtils
                     new NamedValue(Constants.PROP_USER_FIRSTNAME, false, firstName, null), 
                     new NamedValue(Constants.PROP_USER_LASTNAME, false, lastName, null)
         };
-        properties[0] = new NewUserDetails(username, username, pfirstName);
+        properties[0] = new NewUserDetails(username, password, pfirstName);
               
         UserDetails[] details = administrationService.createUsers(properties);
+
         return details;
     }
 
@@ -277,7 +278,7 @@ public class AlfrescoUtils
         try
         {
             WebServiceFactory.setEndpointAddress(GetProperties.getProperty(GetProperties.ALFRESCO_URL));
-            AuthenticationUtils.startSession(GetProperties.getProperty(GetProperties.ALFRESCO_USER), GetProperties.getProperty(GetProperties.ALFRESCO_PASS));
+            AuthenticationUtils.startSession(GetProperties.getProperty(GetProperties.ALFRESCO_ADMIN_USER), GetProperties.getProperty(GetProperties.ALFRESCO_ADMIN_PASS));
         }
         catch (IOException e)
         {
@@ -544,7 +545,7 @@ public class AlfrescoUtils
 
     }
 
-    public static UserDetails[] updateUser( String firstName , String lastName , String email , String username ) throws AdministrationFault , RemoteException
+    public static UserDetails[] updateUser( String firstName , String lastName , String email , String username, String password ) throws AdministrationFault , RemoteException
     {
 
         UserDetails[] properties = new UserDetails[4];

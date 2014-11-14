@@ -58,7 +58,7 @@ public class Bigwave
         {
             AlfrescoUtils.setLogger();
             WebServiceFactory.setEndpointAddress(GetProperties.getProperty(GetProperties.ALFRESCO_URL));
-            AuthenticationUtils.startSession(GetProperties.getProperty(GetProperties.ALFRESCO_USER), GetProperties.getProperty(GetProperties.ALFRESCO_PASS));
+            AuthenticationUtils.startSession(GetProperties.getProperty(GetProperties.ALFRESCO_ADMIN_USER), GetProperties.getProperty(GetProperties.ALFRESCO_ADMIN_PASS));
             users = SqlConnector.getUsers();
 
             logger.info("Total number of users in database : " + users.size());
@@ -114,7 +114,7 @@ public class Bigwave
                         {
                             String firstname = dbUser.getFirstname();
                             String lastname = dbUser.getLastname();
-                            AlfrescoUtils.createUser(firstname, lastname, dbUser.email, dbUser.username);
+                            AlfrescoUtils.createUser(firstname, lastname, dbUser.email, dbUser.username, dbUser.password);
                             logger.info(Bigwave.getTimestamp() + " Successfully created user <" + firstname + "> <" + lastname + "> <" + dbUser.email + "> <" + dbUser.username +">");
                             totalUserscreated++;
                         }
@@ -136,7 +136,7 @@ public class Bigwave
                         {
                             String firstname = dbUser.getFirstname();
                             String lastname = dbUser.getLastname();
-                            AlfrescoUtils.updateUser(firstname, lastname, dbUser.email, dbUser.username);
+                            AlfrescoUtils.updateUser(firstname, lastname, dbUser.email, dbUser.username, dbUser.password);
                             totalUsersupdated++;
                         }
                         catch (Exception exc)
