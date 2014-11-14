@@ -22,7 +22,7 @@ public class ResetAlfresco
     {
 
         WebServiceFactory.setEndpointAddress(GetProperties.getProperty(GetProperties.ALFRESCO_URL));
-        AuthenticationUtils.startSession(GetProperties.getProperty(GetProperties.ALFRESCO_USER), GetProperties.getProperty(GetProperties.ALFRESCO_PASS));
+        AuthenticationUtils.startSession(GetProperties.getProperty(GetProperties.ALFRESCO_ADMIN_USER), GetProperties.getProperty(GetProperties.ALFRESCO_ADMIN_PASS));
         AdministrationServiceSoapBindingStub administrationService = WebServiceFactory.getAdministrationService();
         AccessControlServiceSoapBindingStub authorityService = WebServiceFactory.getAccessControlService();
         ArrayList<String> allAlfrescoGroups = AlfrescoUtils.getAllGroups();
@@ -34,7 +34,7 @@ public class ResetAlfresco
                 ArrayList<String> groupUsers = AlfrescoUtils.getAllUsers(alfGroup);
                 for (String groupUser : groupUsers)
                 {
-                    if (!groupUser.equals(GetProperties.getProperty(GetProperties.ALFRESCO_USER)))
+                    if (!groupUser.equals(GetProperties.getProperty(GetProperties.ALFRESCO_ADMIN_USER)))
                     {
                         try
                         {
