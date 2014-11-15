@@ -121,11 +121,11 @@ public class Bigwave
                         catch (Exception exc)
                         {
                         	exc.printStackTrace();
-                          	File file = new File("d:\\yasser\\yasser.txt");
-                        	FileOutputStream fos = new FileOutputStream(file, true);
-                        	PrintStream ps = new PrintStream(fos);                	
-                        	exc.printStackTrace(ps);
-                        	ps.close();
+                          	//File file = new File("d:\\yasser\\yasser.txt");
+                        	//FileOutputStream fos = new FileOutputStream(file, true);
+                        	//PrintStream ps = new PrintStream(fos);                	
+                        	//exc.printStackTrace(ps);
+                        	//ps.close();
                             logger.error(getTimestamp() + " Cannot create user <" + dbUser.username + ">");
                             totalUsersfailed++;
                         }
