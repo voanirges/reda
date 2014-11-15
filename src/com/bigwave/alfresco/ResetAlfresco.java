@@ -4,10 +4,12 @@ package bigwave.alfresco;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.alfresco.webservice.accesscontrol.AccessControlServiceSoapBindingStub;
 import org.alfresco.webservice.administration.AdministrationFault;
 import org.alfresco.webservice.administration.AdministrationServiceSoapBindingStub;
+import org.alfresco.webservice.administration.UserDetails;
 import org.alfresco.webservice.util.AuthenticationUtils;
 import org.alfresco.webservice.util.WebServiceFactory;
 import org.apache.log4j.Logger;
@@ -20,9 +22,11 @@ public class ResetAlfresco
      * @param args
      * @throws IOException
      */
-    private static ArrayList<User>             Rusers;
+    static ArrayList<User>             		   Rusers;
+    
+    static ArrayList<String>              	   Ausers 			  = new ArrayList<String>();
 
-    static final Logger                        logger                = Logger.getLogger(Bigwave.class);
+    static final Logger                        logger             = Logger.getLogger(Bigwave.class);
 
     static ArrayList<String>                   Rgroups            = new ArrayList<String>();
     
@@ -53,9 +57,13 @@ public class ResetAlfresco
             WebServiceFactory.setEndpointAddress(GetProperties.getProperty(GetProperties.ALFRESCO_URL));
             AuthenticationUtils.startSession(GetProperties.getProperty(GetProperties.ALFRESCO_ADMIN_USER), GetProperties.getProperty(GetProperties.ALFRESCO_ADMIN_PASS));
             Rusers = SqlConnector.getUsers();
+            Ausers = AlfrescoUtils.getAllUsers();
             Agroups = AlfrescoUtils.getAllGroups();
-            logger.info("Total number of users in R database : " + Rusers.size());
             Rgroups = SqlConnector.getGroups();
+            
+            logger.info(new Date());
+            logger.info("Total number of users in R database : " + Rusers.size());
+            logger.info("Total number of users in A database : " + Ausers.size());
             logger.info("Total number of groups in R database : " + Rgroups.size());
             logger.info("Total number of groups in A database : " + Agroups.size());
 
@@ -68,13 +76,18 @@ public class ResetAlfresco
             }
             for (User dbUser : Rusers)
             {
-            	try {
-            		AlfrescoUtils.deleteUsers(new String[]{dbUser.getUsername()});
-            		totalUsersdeleted++;
+              	try {
+            		UserDetails ud = AlfrescoUtils.getUser(dbUser.getUsername());
+            		logger.info("User exists in A: " + ud.getUserName());
+                	try {
+                		AlfrescoUtils.deleteUsers(new String[]{dbUser.getUsername()});
+                		totalUsersdeleted++;
+                	} catch (Exception e){
+                		logger.info("User <" + dbUser.getUsername() + "> Failed to Delete");
+                		e.printStackTrace();
+                		totalUsersfailed++;
+                	}
             	} catch (Exception e){
-            		logger.info("User <" + dbUser.getUsername() + "> Failed to Delete");
-            		e.printStackTrace();
-            		totalUsersfailed++;
             	}
             } 
         } catch (Exception e){

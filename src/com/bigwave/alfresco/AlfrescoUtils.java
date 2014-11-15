@@ -29,11 +29,14 @@ import org.alfresco.webservice.util.AuthenticationUtils;
 import org.alfresco.webservice.util.Constants;
 import org.alfresco.webservice.util.WebServiceFactory;
 import org.apache.log4j.PropertyConfigurator;
+import org.omg.PortableInterceptor.USER_EXCEPTION;
 
 public class AlfrescoUtils
 {
 
     public static final String                         GROUP_AUTHORITY_TYPE       = "GROUP";
+    
+    public static final String                         USER_AUTHORITY_TYPE       = "USER";
 
     public static final String                         ADMIN_USERNAME             = "admin";
 
@@ -270,6 +273,33 @@ public class AlfrescoUtils
             e.printStackTrace();
         }
         return alfGroups;
+    }
+    
+    public static ArrayList<String> getAllUsers()
+    {
+
+        ArrayList<String> alfUsers = new ArrayList<String>();
+        try
+        {
+            AuthorityFilter authorityFilter = new AuthorityFilter();
+            logger.info("Auth Type User: " + AuthorityType.USER.name());
+            authorityFilter.setAuthorityType(AuthorityType.USER.name());
+            String[] users = accessControlService.getAuthorities();
+            for (int i = 0; i < users.length; i++)
+            {
+            	logger.info("A User: " + users[i]);
+                alfUsers.add(users[i]);
+            }
+        }
+        catch (AccessControlFault e)
+        {
+            e.printStackTrace();
+        }
+        catch (RemoteException e)
+        {
+            e.printStackTrace();
+        }
+        return alfUsers;
     }
 
     public static ArrayList<String> getAllUsers( String group )
